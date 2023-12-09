@@ -1,10 +1,9 @@
-import marveltoolbox as mt
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from .evaluation import *
-import matplotlib.colors as mcolors
 import os
+
+import marveltoolbox as mt
+import matplotlib.colors as mcolors
+
+from .evaluation import *
 
 linestyle_tuple = [
     # ('loosely dotted', (0, (1, 10))),

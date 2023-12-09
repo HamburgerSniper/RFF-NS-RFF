@@ -1,12 +1,15 @@
 # NS-RFF
+
 Neural Synchronization: A Generalizable Model-and-Data Driven Approach for Open-Set RFF Authentication
 
 ![diagram](./NS-RFF.png "Neural Synchronization for Openset RFF")
 
 # Requirments
+
 [marveltoolbox](https://github.com/xrj-com/marveltoolbox)
 
 # Citation
+
 ```
 @article{xie2021generalizable,
   title={A Generalizable Model-and-Data Driven Approach for Open-Set RFF Authentication},

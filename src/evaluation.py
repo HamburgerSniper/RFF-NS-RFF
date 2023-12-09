@@ -1,12 +1,11 @@
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
-from sklearn.metrics.pairwise import pairwise_distances
-from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import precision_recall_curve
-from scipy.optimize import brentq
 from scipy.interpolate import interp1d
-import matplotlib.pyplot as plt
+from scipy.optimize import brentq
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics.pairwise import pairwise_distances
 
 
 def torch_distance(x):

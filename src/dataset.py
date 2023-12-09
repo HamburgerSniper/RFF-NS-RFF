@@ -1,10 +1,9 @@
-import torch
-import torch.nn as nn
-import random
-import torch.nn.functional as F
-from marveltoolbox.utils import TorchComplex as tc
-from .preprocessing import main
 import os
+
+import torch
+from marveltoolbox.utils import TorchComplex as tc
+
+from .preprocessing import main
 
 
 class RFdataset(torch.utils.data.Dataset):

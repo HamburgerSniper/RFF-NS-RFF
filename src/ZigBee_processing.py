@@ -1,7 +1,4 @@
 import torch
-from scipy.io import loadmat as load
-import numpy as np
-from numpy import pi as pi
 from marveltoolbox.utils import TorchComplex as tc
 from marveltoolbox.utils import fft_plot
 
