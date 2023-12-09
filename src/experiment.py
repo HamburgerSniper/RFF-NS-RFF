@@ -1,4 +1,4 @@
-import marveltoolbox as mt 
+import marveltoolbox as mt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,24 +7,25 @@ import matplotlib.colors as mcolors
 import os
 
 linestyle_tuple = [
-# ('loosely dotted', (0, (1, 10))),
-# ('dotted', (0, (1, 1))),
-('solid','solid'), 
-('dashed','dashed'), 
-('dashdot','dashdot'), 
-('dotted','dotted'),
-# ('densely dotted', (0, (1, 2))), 
-# ('loosely dashed', (0, (5, 10))),
-# ('dashed', (0, (5, 5))),
-('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1))),
-('densely dashdotted', (0, (3, 1, 1, 1))),
-('densely dashed', (0, (5, 1))), ('loosely dashdotted', (0, (3, 10, 1, 10))),
-('dashdotted', (0, (3, 5, 1, 5))),
-('densely dashdotted', (0, (3, 1, 1, 1))), ('dashdotdotted', (0, (3, 5, 1, 5, 1, 5))),
-('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
-('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
+    # ('loosely dotted', (0, (1, 10))),
+    # ('dotted', (0, (1, 1))),
+    ('solid', 'solid'),
+    ('dashed', 'dashed'),
+    ('dashdot', 'dashdot'),
+    ('dotted', 'dotted'),
+    # ('densely dotted', (0, (1, 2))),
+    # ('loosely dashed', (0, (5, 10))),
+    # ('dashed', (0, (5, 5))),
+    ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1))),
+    ('densely dashdotted', (0, (3, 1, 1, 1))),
+    ('densely dashed', (0, (5, 1))), ('loosely dashdotted', (0, (3, 10, 1, 10))),
+    ('dashdotted', (0, (3, 5, 1, 5))),
+    ('densely dashdotted', (0, (3, 1, 1, 1))), ('dashdotdotted', (0, (3, 5, 1, 5, 1, 5))),
+    ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+    ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
 
 markers = ['o', 'v', '^', '<', '>', '8', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X']
+
 
 class Config(mt.BaseExpConfs):
     def __init__(self):
@@ -32,6 +33,7 @@ class Config(mt.BaseExpConfs):
         self.exp_flag = 'demo'
         self.snr = None
         self.device = 0
+
 
 class RFFExperiments(mt.BaseExperiment):
     def __init__(self):
@@ -56,7 +58,6 @@ class RFFExperiments(mt.BaseExperiment):
                 self.logs['dataset'] = dataset_key
                 self.print_logs()
             del trainer
-
 
     def eval(self, trainer, trainer_name, eval_dataset):
         trainer.models['C'].eval()
@@ -88,7 +89,7 @@ class RFFExperiments(mt.BaseExperiment):
 
         if 'close' in eval_dataset:
             acc = correct / len(self.datasets[eval_dataset])
-            test_loss = test_loss/ len(self.datasets[eval_dataset])
+            test_loss = test_loss / len(self.datasets[eval_dataset])
             self.results[trainer_name][eval_dataset]['acc'] = acc
             self.results[trainer_name][eval_dataset]['test_loss'] = test_loss
             self.logs['Test Loss'] = test_loss
@@ -97,12 +98,11 @@ class RFFExperiments(mt.BaseExperiment):
             self.print_logs()
             self.logs = {}
 
-
     def ROC(self, trainer, dataset, is_save_dist=True):
         features = self.results[trainer][dataset]['features'].numpy()
         labels = self.results[trainer][dataset]['labels'].numpy()
         intra_dist, inter_dist = inter_intra_dist(features, labels)
-        
+
         eer, roc_auc, thresh = get_auc_eer(intra_dist, inter_dist, plot_roc=False)
         if is_save_dist:
             self.results[trainer][dataset]['intra_dist'] = intra_dist
@@ -120,19 +120,20 @@ class RFFExperiments(mt.BaseExperiment):
                 intra_dist = self.results[trainer][dataset]['intra_dist']
                 inter_dist = self.results[trainer][dataset]['inter_dist']
                 distance_hist_plot(
-                    intra_dist, inter_dist, filename= self.exp_path + '/Final_{}_{}_{}_dist_hist.png'.format(self.flag, trainer, dataset))
+                    intra_dist, inter_dist,
+                    filename=self.exp_path + '/Final_{}_{}_{}_dist_hist.png'.format(self.flag, trainer, dataset))
 
     def roc_plots(self, trainer_keys, dataset_keys, name_dict, file_name='ROC.png'):
-        plt.figure(figsize=(4,4), dpi=300)
+        plt.figure(figsize=(4, 4), dpi=300)
         lw = 2
-        filename= os.path.join(self.exp_path, file_name)
+        filename = os.path.join(self.exp_path, file_name)
         colour_idxs = list(mcolors.TABLEAU_COLORS)
         linestyle = ['solid', 'dashed', 'dashdot', 'dotted']
         ci = 0
         # colours = ['blue', 'green', 'red', 'black', 'yellow', 'orange']
         for trainer in trainer_keys:
             for dataset in dataset_keys:
-                
+
                 intra_dist = self.results[trainer][dataset]['intra_dist']
                 inter_dist = self.results[trainer][dataset]['inter_dist']
                 inter_label = np.ones_like(inter_dist)
@@ -149,9 +150,9 @@ class RFFExperiments(mt.BaseExperiment):
                 else:
                     label_name = name_dict[trainer]
                 plt.plot(
-                    fpr, tpr, color=mcolors.TABLEAU_COLORS[colour_idxs[ci]], 
-                    linestyle=linestyle_tuple[int(ci%7)][1],
-                        lw=lw, label='AUC:{:.2f} EER:{:.2f} {}'.format(roc_auc, eer, label_name))
+                    fpr, tpr, color=mcolors.TABLEAU_COLORS[colour_idxs[ci]],
+                    linestyle=linestyle_tuple[int(ci % 7)][1],
+                    lw=lw, label='AUC:{:.2f} EER:{:.2f} {}'.format(roc_auc, eer, label_name))
                 ci += 1
         plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
         plt.xlim([0.0, 1.0])
@@ -167,16 +168,16 @@ class RFFExperiments(mt.BaseExperiment):
         plt.close()
 
     def pr_plots(self, trainer_keys, dataset_keys, name_dict, file_name='PR.png'):
-        plt.figure(figsize=(4,4), dpi=300)
+        plt.figure(figsize=(4, 4), dpi=300)
         lw = 2
-        filename= os.path.join(self.exp_path, file_name)
+        filename = os.path.join(self.exp_path, file_name)
         colour_idxs = list(mcolors.TABLEAU_COLORS)
         linestyle = ['solid', 'dashed', 'dashdot', 'dotted']
         ci = 0
         # colours = ['blue', 'green', 'red', 'black', 'yellow', 'orange']
         for trainer in trainer_keys:
             for dataset in dataset_keys:
-                
+
                 intra_dist = self.results[trainer][dataset]['intra_dist']
                 inter_dist = self.results[trainer][dataset]['inter_dist']
                 inter_label = np.ones_like(inter_dist)
@@ -193,9 +194,9 @@ class RFFExperiments(mt.BaseExperiment):
                 else:
                     label_name = name_dict[trainer]
                 plt.plot(
-                    recall, precision, color=mcolors.TABLEAU_COLORS[colour_idxs[ci]], 
-                    linestyle=linestyle_tuple[int(ci%7)][1],
-                        lw=lw, label='auc:{:.2f} {}'.format(pr_auc, label_name))
+                    recall, precision, color=mcolors.TABLEAU_COLORS[colour_idxs[ci]],
+                    linestyle=linestyle_tuple[int(ci % 7)][1],
+                    lw=lw, label='auc:{:.2f} {}'.format(pr_auc, label_name))
                 ci += 1
         plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
         plt.xlim([0.0, 1.0])
@@ -211,9 +212,9 @@ class RFFExperiments(mt.BaseExperiment):
         plt.close()
 
     def snr_auc_plots(self, trainer_keys, dataset_keys, snr_list, name_dict=None, file_name='snr_auc.png'):
-        plt.figure(figsize=(4,4), dpi=300)
+        plt.figure(figsize=(4, 4), dpi=300)
         lw = 2
-        filename= os.path.join(self.exp_path, file_name)
+        filename = os.path.join(self.exp_path, file_name)
         colour_idxs = list(mcolors.TABLEAU_COLORS)
         linestyle = ['solid', 'dashed', 'dashdot', 'dotted']
         # colours = ['blue', 'green', 'red', 'black', 'yellow', 'orange']
@@ -231,9 +232,9 @@ class RFFExperiments(mt.BaseExperiment):
                 else:
                     label_name = name_dict[trainer]
                 plt.plot(
-                    snr_list, auc_list, marker=markers[int(ci%7)], 
-                    color=mcolors.TABLEAU_COLORS[colour_idxs[int(ci%len(colour_idxs))]], 
-                    linestyle=linestyle_tuple[int(ci%7)][1],
+                    snr_list, auc_list, marker=markers[int(ci % 7)],
+                    color=mcolors.TABLEAU_COLORS[colour_idxs[int(ci % len(colour_idxs))]],
+                    linestyle=linestyle_tuple[int(ci % 7)][1],
                     lw=lw, label='{}'.format(label_name))
                 # plt.scatter(snr_list, auc_list, color=mcolors.TABLEAU_COLORS[colour_idxs[int(ci%len(colour_idxs))]], label='{}'.format(trainer_type))
                 # plt.scatter(param_list, auc_list, label='{}'.format(trainer_type))
@@ -250,9 +251,9 @@ class RFFExperiments(mt.BaseExperiment):
         plt.close()
 
     def param_auc_plots(self, trainer_dict, dataset_keys, name_dict=None, file_name=None):
-        plt.figure(figsize=(4,4), dpi=300)
+        plt.figure(figsize=(4, 4), dpi=300)
         lw = 2
-        filename= os.path.join(self.exp_path, file_name)
+        filename = os.path.join(self.exp_path, file_name)
         colour_idxs = list(mcolors.TABLEAU_COLORS)
         linestyle = ['solid', 'dashed', 'dashdot', 'dotted']
         best_models = {}
@@ -262,7 +263,7 @@ class RFFExperiments(mt.BaseExperiment):
             auc_list = []
             for trainer in trainer_list:
                 for dataset in dataset_keys:
-                    param_list.append((self.results[trainer]['params']-513*54)/1000000) 
+                    param_list.append((self.results[trainer]['params'] - 513 * 54) / 1000000)
                     auc_list.append(self.results[trainer][dataset]['roc_auc'])
                     if auc_list[-1] > best_models.setdefault(dataset, ['', 0.0, 0.0])[1]:
                         best_models[dataset] = [trainer, auc_list[-1], param_list[-1]]
@@ -270,22 +271,22 @@ class RFFExperiments(mt.BaseExperiment):
                 label_name = trainer_type
             else:
                 label_name = name_dict[trainer_type]
-            plt.scatter(param_list, auc_list, 
-                color=mcolors.TABLEAU_COLORS[colour_idxs[int(ci%len(colour_idxs))]], marker=markers[int(ci%7)],
-                label='{}'.format(label_name))
+            plt.scatter(param_list, auc_list,
+                        color=mcolors.TABLEAU_COLORS[colour_idxs[int(ci % len(colour_idxs))]],
+                        marker=markers[int(ci % 7)],
+                        label='{}'.format(label_name))
             # plt.scatter(param_list, auc_list, label='{}'.format(trainer_type))
             ci += 1
         print(best_models)
         plt.xlabel('# Params (M)')
         plt.ylabel('ROC-AUC')
-        plt.ylim(0.95,1.005)
+        plt.ylim(0.95, 1.005)
         # plt.ylim(0.990,1.001)
         # plt.title('Params-AUC {}'.format(dataset_keys[0]))
         plt.legend(loc="lower right")
         plt.show()
         plt.savefig(filename, bbox_inches='tight')
         plt.close()
-
 
     def acc_plots(self, trainer_keys, dataset_keys):
         pass

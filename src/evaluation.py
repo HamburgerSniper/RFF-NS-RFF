@@ -48,10 +48,12 @@ def inter_intra_dist(features, labels, metric='cosine', other_features=None):
 
     return intra_dist, inter_dist
 
+
 def pair_dist(features1, features2, metric='cosine'):
     distance = pairwise_distances(features1, features2, metric=metric)
     pair_dist = np.diag(distance)
     return pair_dist
+
 
 def compute_centers(features, labels):
     class_num = len(list(set(labels)))
@@ -80,8 +82,9 @@ def center_dist(features, labels, centers):
     inter_dist = distance[mask == 0]
     return intra_dist, inter_dist
 
+
 def distance_hist_plot(intra_dist, inter_dist, filename=None):
-    plt.figure(figsize=(4,3), dpi=300)
+    plt.figure(figsize=(4, 3), dpi=300)
     # plt.title('Distance distribution')
     plt.hist(intra_dist, 100, density=True, alpha=0.5)
     plt.hist(inter_dist, 100, density=True, alpha=0.5)
@@ -91,8 +94,6 @@ def distance_hist_plot(intra_dist, inter_dist, filename=None):
     if not filename is None:
         plt.savefig(filename, bbox_inches='tight')
         plt.close()
-
-    
 
 
 def get_auc_eer(intra_dist, inter_dist, plot_roc=False, filename=None):
@@ -108,7 +109,7 @@ def get_auc_eer(intra_dist, inter_dist, plot_roc=False, filename=None):
         plt.figure()
         lw = 2
         plt.plot(fpr, tpr, color='darkorange',
-                lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
         plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
@@ -126,8 +127,9 @@ def get_auc_eer(intra_dist, inter_dist, plot_roc=False, filename=None):
 
 def cos_clf(feature_x, feature_t, threshold=0.79):
     cosine_sim = -F.cosine_similarity(feature_x, feature_t).view(-1, 1) + 1
-    output = torch.cat((-cosine_sim + 2*threshold, cosine_sim), dim=1)
+    output = torch.cat((-cosine_sim + 2 * threshold, cosine_sim), dim=1)
     return output
+
 
 def l2_norm(input):
     input_size = input.size()
@@ -138,5 +140,6 @@ def l2_norm(input):
     output = _output.view(input_size)
     return output, norm
 
+
 def BO_balance_score(RB, auc, lamda=20000):
-    return RB - (1-auc)* lamda
+    return RB - (1 - auc) * lamda
